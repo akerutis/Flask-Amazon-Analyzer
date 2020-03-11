@@ -1,0 +1,85 @@
+{% extends "public/templates/public_template.html" %}
+
+{% block title %}Jinja{% endblock %}
+
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+      <h1>Analyses</h1>
+      <hr>
+
+    <h4>Promotions</h4>
+
+        {% for key, value in promos.items() %}
+        <strong class="d-block mb-3">{{key}}</strong>
+<ul>
+  <li>{{ value }}</li>
+</ul>{% endfor %}
+
+        <h1>Product Breakdown</h1>
+      <hr>
+    <h4>Total Sales: ${{asinSum}}</h4>
+
+        {% for a,b,c in asins %}
+        <strong class="d-block mb-3">{{a}}</strong>
+<ul>
+  <li>{{b}}% of total</li>
+    <li>ASIN: {{c}}</li>
+</ul>
+
+
+</form>
+{% endfor %}
+
+        <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
+<script>
+
+ var data = [{
+              type: 'choropleth',
+              locationmode: 'USA-states',
+              locations: {{df1 | tojson}},
+              z: {{df2 | tojson}},
+              text: {{df3 | tojson}},
+            colorbar: {
+              title: 'Sale Number in $US',
+            },
+            marker: {
+              line:{
+                color: 'rgb(255,255,255)',
+                width: 2
+              }
+            }
+          }];
+
+  var layout = {
+          title: 'Customer Orders',
+          paper_bgcolor:"#f1f1f1",
+          geo:{
+            scope: 'usa',
+            showlakes: true,
+            lakecolor: 'rgb(255,255,255)'
+          }
+      };
+    console.log({{df1 | tojson}})
+      Plotly.plot(myDiv, data, layout, {showLink: false});
+
+
+
+
+
+</script>
+
+
+
+
+
+<hr>
+
+
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

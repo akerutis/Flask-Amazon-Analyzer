@@ -1,0 +1,56 @@
+{% extends "public/templates/public_template.html" %}
+
+{% block title %}Upload{% endblock %}
+
+{% block main %}
+
+<div class="container">
+  <div class="row">
+    <div class="col">
+
+      <h1>Upload an Amazon All Orders TXT file for analysis</h1>
+      <hr>
+
+
+      <form action="/upload" method="POST" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label>Select the TXT file</label>
+          <div class="custom-file">
+            <label class="custom-file-label" for="textFile">Select file...</label>
+            <input type="file" class="custom-file-input" name="textFile" id="textFile" oninput="filesize(this);">
+
+
+
+          </div>
+        </div>
+
+
+        <button type="submit" class="btn btn-primary">Upload</button>
+
+      </form>
+      <br>
+      <hr>
+      <style>
+      img.one {
+  height: 60%;
+  width: 65%;
+}
+      img.two {
+  height: 60%;
+  width: 34%;
+}
+</style>
+
+      <img src="{{ url_for('static', filename='img/how1.jpg') }}" img class="one" alt="" width="650" height="250">
+      <img src="{{ url_for('static', filename='img/how2.jpg') }}" img class="two" alt="" width="400" height="250">
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+{% endblock %}
