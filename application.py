@@ -6,9 +6,16 @@ from flask import request, redirect
 from werkzeug.utils import secure_filename
 from flask import Flask
 import os
-
+from bs4 import BeautifulSoup
+from urllib.request import urlopen as uReq
+import urllib
+from http.cookiejar import CookieJar
+from flask import jsonify
+import multiprocessing
+from flask_cors import CORS
 
 application = Flask(__name__)
+CORS(application)
 
 cwd = os.getcwd()
 
@@ -235,16 +242,95 @@ def analyze():
     asin1    = breakdown[1]
     asin2    = breakdown[2]
     asin3    = breakdown[3]
+    asin4    = breakdown[4]
+    asin5 = breakdown[5]
     asins=[]
     for element in range(0, len(asin2)):
-        asins.append([asin2[element], asin1[element], asin3[element]])
+        asins.append([asin2[element], asin1[element], asin3[element], str(round(asin4[element], 2)), asin5[element]])
     print(asins)
     print("wtf")
     return render_template("public/analyze.html", promos = promos, df1=df1, df2=df2, df3=df3, asinSum=asinSum, asins=asins)
 
+
 @application.route("/admin/dashboard")
 def admin():
     return render_template("admin/dashboard.html")
+
+courseList={}
+
+@application.route("/courses", methods=['GET'])
+def courses():
+    username = request.args.get('username')
+    print(username)
+    course = request.args.get('course')
+    print(course)
+    results="kk"
+    try:
+        toInteger = int(course)
+        if toInteger in range(0, 80000):
+            if course in courseList:
+                return jsonify(results=courseList[course])
+            else:
+                results = getClasses(course)
+                courseList[course] = results
+    except:
+        print("error")
+    return jsonify(results=results)
+    #return "<h1 style='color: red;'>" + results + "</h1>"
+
+def getClasses(courseNum):
+
+
+    url = "https://webapp4.asu.edu/catalog/coursedetails?r=" + courseNum
+    req = urllib.request.Request(url)
+    cj = CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+
+    while(True):
+        response = opener.open(req)
+        page_html = response.read()
+        soup = BeautifulSoup(page_html, 'html.parser')
+        all_a = soup.find_all('span', {'class':'icontip'})
+        try:
+            for item in all_a:
+                if item['rel'] == "#tt_seats-open":
+                    print("Class is Open")
+                    p1 = multiprocessing.Process(target=keepClasses, args=(courseNum,))
+                    p1.start()
+                    return ("Class is Open")
+                if item['rel'] == "#tt_seats-closed":
+                    print("Class is closed")
+                    p1 = multiprocessing.Process(target=keepClasses, args=(courseNum,))
+                    p1.start()
+                    return ("Class is closed")
+        except:
+            print("Error")
+
+def keepClasses(courseNum):
+
+
+    url = "https://webapp4.asu.edu/catalog/coursedetails?r=" + courseNum
+    req = urllib.request.Request(url)
+    cj = CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+
+    while(True):
+        response = opener.open(req)
+        page_html = response.read()
+        soup = BeautifulSoup(page_html, 'html.parser')
+        all_a = soup.find_all('span', {'class':'icontip'})
+        try:
+            for item in all_a:
+                if item['rel'] == "#tt_seats-open":
+                    courseList[courseNum] = "Class is Open"
+                if item['rel'] == "#tt_seats-closed":
+                    courseList[courseNum] = "Class is closed"
+
+
+        except:
+            print("Error")
+
+
 
 if __name__ == "__main__":
     application.debug = True

@@ -22,10 +22,12 @@
       <hr>
     <h4>Total Sales: ${{asinSum}}</h4>
 
-        {% for a,b,c in asins %}
+        {% for a,b,c,d,e in asins %}
         <strong class="d-block mb-3">{{a}}</strong>
 <ul>
-  <li>{{b}}% of total</li>
+    <li>{{e}} products sold</li>
+    <li>${{d}} sold</li>
+  <li>{{b}}% of total sales in cash</li>
     <li>ASIN: {{c}}</li>
 </ul>
 

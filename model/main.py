@@ -304,12 +304,15 @@ def create_pie():
     print(unique_asin)
 
     sum_asin = [0] * len(unique_asin)
+    sum_orders = [0] * len(unique_asin)
     for cus in customer_list:
         if cus.item_price != "":
             for index in range(len(unique_asin)):
                 if cus.asin == unique_asin[index]:
                     sum_asin[index] += float(cus.item_price)
-
+                    sum_orders[index] += 1
+    print(sum_asin)
+    print(sum_orders)
     sum_all = 0
     for index in sum_asin:
         sum_all += float(index)
@@ -332,6 +335,9 @@ def create_pie():
                 temp3 = name_list[first]
                 name_list[first] = name_list[index]
                 name_list[index] = temp3
+                temp4 = sum_orders[first]
+                sum_orders[first]= sum_orders[index]
+                sum_orders[index]=temp4
 
 
     percents = []
@@ -358,7 +364,7 @@ def create_pie():
     fig = plt.gcf()
     fig.set_size_inches(15, 8)
     """
-    return sum_all, percents, name_list, unique_asin
+    return sum_all, percents, name_list, unique_asin, sum_asin, sum_orders
 
 def browsefunc():
 
